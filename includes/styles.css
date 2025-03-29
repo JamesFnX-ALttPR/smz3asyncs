@@ -1,0 +1,363 @@
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
+    content: " \25B4\25BE"
+}
+table.sortable tbody tr:nth-child(2n) td { background: #303030; }
+table.sortable tbody tr:nth-child(2n+1) td { background: #404040; }
+
+@font-face { font-family: "Hylia Serif Beta"; src: local("Hylia Serif Beta"), url("../fonts/HyliaSerifBeta-Regular.otf") format("opentype"); }
+@font-face { font-family: "Return of Ganon"; src: local("Return of Ganon"), url("../fonts/ReturnofGanon.ttf") format("truetype"); }
+@font-face {
+    font-family: 'Super Metroid';
+    src: url("../fonts/super-metroid-snes.otf") format("opentype");
+}
+
+.hash {
+    font-family: 'Super Metroid';
+    background: #000000 !important;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: left;
+}
+
+.select2-selection__rendered, .select2-container {
+    font-family: 'Super Metroid';
+    text-align: left;
+}
+
+td.hashSearch {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body {
+    background-color: black;
+}
+tr.swiss, tr.groups {
+    display: none;
+}
+
+a:link {
+    color: goldenrod;
+    text-decoration: none;
+}
+
+a:visited {
+    color: moccasin;
+    text-decoration: none;
+}
+
+a.toplinks:link, a.toplinks:visited {
+    color: goldenrod;
+    text-decoration: none;
+}
+
+h1 {
+    font-family: "Hylia Serif Beta";
+    color: gold;
+    text-align: center;
+    font-size: xxx-large;
+    font-weight: normal;
+}
+
+div.topline {
+    font-family: "Return of Ganon";
+    font-size: xx-large;
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.topline a {
+    padding: 20px;
+    font-weight: bold;
+}
+
+div.asyncTopRow {
+    font-family: "Hylia Serif Beta";
+    color: white;
+    font-size: xx-large;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+div.asyncMiddle {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: x-large;
+}
+
+div.asyncBottom {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.error {
+    color: lightblue;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: x-large;
+    font-weight: bold;
+    text-align: center;
+}
+table.searchResults, table.raceResults {
+    border: 1px solid white;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.searchRefine, table.userAdmin {
+    background-color: #505050;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+table.search, table.submitAsync, table.register, table.createAsync, table.pairings, table.standings, table.input {
+    background-color: #505050;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+a.fakeButton {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: large;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+
+caption {
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 12pt;
+    color: white;
+}
+
+th {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: #303030;
+    color: white;
+}
+
+.tourneyFormLabel {
+    text-align: right;
+    padding-right: 10px;
+    background-color: #505050;
+}
+
+.rightAlign {
+    text-align: right;
+    padding-right: 10px;
+    background-color: #505050;
+}
+
+tr.odd {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: #404040;
+    color: white;
+}
+
+tr.even {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: #505050;
+    color: white;
+}
+
+tr.team {
+    font-weight: bold;
+    background-color:  #303080;
+}
+
+tr.new {
+    color: powderblue;
+}
+tr.spoiler {
+    display: none;
+}
+
+label {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: gold;
+    font-weight: normal;
+}
+
+label.passwordLabel {
+    text-decoration: underline;
+}
+
+td {
+    padding-left: 3px;
+    padding-right: 3px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+td.place1 {
+    background-color: gold;
+    color: black;
+    font-weight: bold;
+}
+
+td.place2 {
+    background-color: silver;
+    color: black;
+    font-weight: bold;
+}
+
+td.place3 {
+    background-color: #CD7F32;
+    font-weight: bold;
+}
+
+td.teamRacerName {
+    padding-left: 20px;
+    padding-right: 3px;
+}
+
+td.teamRacerData {
+    padding-left: 10px;
+    padding-right: 3px;
+}
+
+span.comment {
+    font-size: x-small;
+    vertical-align: super;
+    line-height: 0.9;
+    color: goldenrod;
+}
+
+input[type='number'] {
+    width: 40px;
+}
+
+input {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 12pt;
+}
+
+input.CR {
+    width: 60px;
+}
+
+textarea {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 12pt;
+}
+table.accountHome, table.displaySeries, table.tournamentCentral {
+    margin-left: auto;
+    margin-right: auto;
+    border: 0px;
+}
+
+.tcHeader {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: x-large;
+    text-align: center;
+    color: white;
+}
+
+td.accountHomeLinks, .tcLinks {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: x-large;
+    text-align: center;
+}
+
+td.displaySeriesLinks {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: x-large;
+    text-align: center;
+    width: 50%;
+}
+
+td.accountHomeDesc, .displaySeriesDesc, .tcDesc {
+    color: white;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 25px;
+    font-size: medium;
+}
+
+td.submitButton {
+    text-align: center;
+}
+
+input.submitButton {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: large;
+}
+
+.centerAlign {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.footerleft {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    float: left;
+    color: white;
+}
+
+.footerright {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    float: right;
+    color: white;
+}
+
+.italics {
+    font-style: italic;
+}
+.capitalize {
+    text-transform: capitalize;
+}
+
+.selectclass {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.select2-container {
+    min-width: 150px;
+}
+
+.overflow {
+    height: 200px;
+}
+
+h4 {
+    font-weight:  bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.valid {
+    color: forestgreen;
+}
+
+.invalid {
+    color: white;
+    text-shadow: -1px 0 palevioletred, 0 1px palevioletred, 1px 0 palevioletred, 0 -1px palevioletred;
+}
