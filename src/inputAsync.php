@@ -1,5 +1,4 @@
 <?php
-// include('../src/selectJS.php');
 ?>
         <form method="post" autocomplete="off" action="<?= $domain ?>/createasync">
             <table class="createAsync">
@@ -37,11 +36,11 @@ createHashDropdown();
                     </select></td></tr>
                     <tr><th class="rightAlign"><label for="description">Description:</label></th><td class="centerAlign"><input type="text" size="46" id="description" name="description" /></td></tr>
                     <tr><th class="rightAlign"><label for="spoiler" title="Check here if this is a spoiler mode. A field will appear to add a link to the spoiler log.">Spoiler?</label></th><td><input type="checkbox" id="spoiler" name="spoiler" value="y" onclick="if (this.checked) { document.getElementsByClassName('spoiler')[0].style.display = 'table-row'; } else { document.getElementsByClassName('spoiler')[0].style.display = 'none'; }" /></td></tr>
-                    <tr class="spoiler"><th class="rightAlign"><label for="spoilerLog" title="Include the entire URL for the seed's spoiler log, starting with https://">Link to Spoiler Log:</label> </th><td class="centerAlign"><input type="text" size="46" id="spoilerLog" name="spoilerLog" /></td></tr>
+                    <tr class="spoiler"><th class="rightAlign"><label for="spoiler_log" title="Include the entire URL for the seed's spoiler log, starting with https://">Link to Spoiler Log:</label> </th><td class="centerAlign"><input type="text" size="46" id="spoiler_log" name="spoiler_log" /></td></tr>
                     <tr><th class="rightAlign"><label for="team" title="Check here if this is a co-op/team seed meant for two players.">Co-Op/Team?</label></th><td><input type="checkbox" id="team" name="team" value="y" /></td></tr>
-                    <tr><th class="rightAlign"><label for="loginRequired" title="Check here if a user must login to submit a result.">Login Required?</label></th><td><input type="checkbox" id="loginRequired" name="loginRequired" value="y" /></td></tr>
-                    <tr><th class="rightAlign"><label for="vodRequired" title="Check here if a VOD link will be required to submit a result.">VOD Required?</label></th><td><input type="checkbox" id="vodRequired" name="vodRequired" value="y" /></td></tr>
-                    <tr><th class="rightAlign"><label for="editDisallowed" title="Check here if you would like users to not be able to edit their result submissions after entering them.">Disallow Edits?</label></th><td><input type="checkbox" id="editDisallowed" name="editDisallowed" value="y" /></td></tr>
+                    <tr><th class="rightAlign"><label for="login_required" title="Check here if a user must login to submit a result.">Login Required?</label></th><td><input type="checkbox" id="login_required" name="login_required" value="y" /></td></tr>
+                    <tr><th class="rightAlign"><label for="vod_required" title="Check here if a VOD link will be required to submit a result.">VOD Required?</label></th><td><input type="checkbox" id="vod_required" name="vod_required" value="y" /></td></tr>
+                    <tr><th class="rightAlign"><label for="edits_allowed" title="Check here if you would like users to not be able to edit their result submissions after entering them.">Disallow Edits?</label></th><td><input type="checkbox" id="edits_allowed" name="edits_allowed" value="n" /></td></tr>
                     <tr><th class="rightAlign"><label for="tournament_seed" title="Check here if this seed is for a tournament. Login will be required to view the async details. Participants will not be viewable from the submission page. Results will not be viewable unless you've submitted a time.">Tournament Seed?</label></th><td><input type="checkbox" id="tournament_seed" name="tournament_seed" value="y" /></td></tr>
                     <tr><td colspan="2" class="submitButton"><input type="Submit" class="submitButton" value="Create Async" /></td></tr>
                 </tbody>

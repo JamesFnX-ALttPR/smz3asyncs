@@ -1,15 +1,15 @@
 <?php
 
-// Variables from form page - email, displayName, searchRange (password1), (password2)
+// Variables from form page - email, display_name, default_search_range (password1), (password2)
 
 // Get current display name and email for user
-$stmt = $pdo->prepare("SELECT email, displayName, searchRange FROM asyncusers WHERE id = :id");
+$stmt = $pdo->prepare("SELECT email, display_name, default_search_range FROM asyncusers WHERE id = :id");
 $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
 $stmt->execute();
 $row = $stmt->fetch();
 $currentEmail = $row['email'];
-$currentDisplayName = $row['displayName'];
-$currentOffset = $row['searchRange'];
+$currentdisplay_name = $row['display_name'];
+$currentOffset = $row['default_search_range'];
 $errors = '';
 
 $newEmail = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
@@ -43,8 +43,8 @@ if ($_POST['password2'] != '') {
     }
 }
 
-$newDisplayName = strip_tags($_POST['displayName']);
-$newOffset = $_POST['searchRange'];
+$newdisplay_name = strip_tags($_POST['display_name']);
+$newOffset = $_POST['default_search_range'];
 
 //Process errors and update only new information in the database
 if ($errors != '') {
@@ -59,17 +59,17 @@ if ($errors != '') {
         $stmt->execute();
     }
     if ($newOffset != $currentOffset) {
-        $stmt = $pdo->prepare("UPDATE asyncusers SET searchRange = :offset WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE asyncusers SET default_search_range = :offset WHERE id = :id");
         $stmt->bindValue(':offset', $newOffset, PDO::PARAM_INT);
         $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
         $stmt->execute();
     }
-    if ($newDisplayName != $currentDisplayName) {
-        $stmt = $pdo->prepare("UPDATE asyncusers SET displayName = :displayName WHERE id = :id");
-        $stmt->bindValue(':displayName', $newDisplayName, PDO::PARAM_STR);
+    if ($newdisplay_name != $currentdisplay_name) {
+        $stmt = $pdo->prepare("UPDATE asyncusers SET display_name = :display_name WHERE id = :id");
+        $stmt->bindValue(':display_name', $newdisplay_name, PDO::PARAM_STR);
         $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
         $stmt->execute();
-        $_SESSION['displayName'] = $newDisplayName;
+        $_SESSION['display_name'] = $newdisplay_name;
     }
     if ($_POST['password1'] != '' && $_POST['password2'] != '' && $_POST['password1'] == $_POST['password2']) {
         $stmt = $pdo->prepare("UPDATE asyncusers SET password = :password WHERE id = :id");

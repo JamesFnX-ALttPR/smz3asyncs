@@ -23,12 +23,12 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
         // Let's check the email and see if it's in the database
         if ($_POST['email'] != '') {
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-            $stmt = $pdo->prepare("SELECT email, displayName, is_banned FROM asyncusers WHERE email = :email");
+            $stmt = $pdo->prepare("SELECT email, display_name, is_banned FROM asyncusers WHERE email = :email");
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch();
             if ($row) {
-                $displayName = $row['displayName'];
+                $display_name = $row['display_name'];
                 $banned = $row['is_banned'];
                 if ($banned == 'n') {
                     $callback = createCallbackLink();
@@ -37,7 +37,6 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
                     $headers = [];
                     $headers[] = 'From: SMZ3 Asyncs <alttprasyncs@gmail.com>';
                     $headers[] = 'Reply-To: alttprasyncs@gmail.com';
-                    $headers[] = 'Bcc: jamesfnx@gmail.com';
                     $headers[] = 'X-Mailer: PHP/' . phpversion();
                     $headers[] = 'Content-Type: text/html; charset=iso-8859-1';
                     $headers[] = 'MIME-Version: 1.0';
@@ -46,7 +45,7 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
         <title>SMZ3 Asyncs - Password Reset Request</title>
     </head>
     <body>
-        <p>Hello ' . $displayName . '!
+        <p>Hello ' . $display_name . '!
         Someone recently requested to reset your password. If this was you, please click on the following link or copy it into your browser:<br />
         <br />
         <a target="_blank" href="' . $link . '">' . $link . '</a><br />
@@ -59,11 +58,11 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
     </body>
 </html>';
                     mail($email, $subject, $message, implode("\r\n", $headers));
-                    $stmt2 = $pdo->prepare("UPDATE asyncusers SET resetCallback = :callback WHERE email = :email");
+                    $stmt2 = $pdo->prepare("UPDATE asyncusers SET callback_hash = :callback WHERE email = :email");
                     $stmt2->bindParam(':callback', $callback);
                     $stmt2->bindParam(':email', $email, PDO::PARAM_STR);
                     $stmt2->execute();
-                    $event = "CREATE EVENT remove_" . $callback . " ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 DAY DO UPDATE asyncusers SET resetCallback = NULL WHERE email = :email";
+                    $event = "CREATE EVENT remove_" . $callback . " ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 DAY DO UPDATE asyncusers SET callback_hash = NULL WHERE email = :email";
                     $stmt2 = $pdo->prepare($event);
                     $stmt2->bindParam(':email', $email, PDO::PARAM_STR);
                     $stmt2->execute();

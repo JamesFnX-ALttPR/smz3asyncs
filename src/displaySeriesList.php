@@ -2,14 +2,14 @@
 
 echo '        <table class="displaySeries">' . PHP_EOL;
 echo '            <tbody>' . PHP_EOL;
-$stmt = $pdo->prepare("SELECT id, seriesName, seriesDescription FROM series");
+$stmt = $pdo->prepare("SELECT id, series_name, series_description FROM series");
 $stmt->execute();
 $recordCount = 0;
 while ($row = $stmt->fetch()) {
     $recordCount++;
     $id = $row['id'];
-    $name = $row['seriesName'];
-    $desc = $row['seriesDescription'];
+    $name = $row['series_name'];
+    $desc = $row['series_description'];
     if ($recordCount % 2 == 1) {
         echo '                <tr>';
     }

@@ -54,11 +54,11 @@ if ($errors != '') {
         $stmt->bindValue(':racerForfeit', $racerForfeit, PDO::PARAM_STR);
         $stmt->bindValue(':racerCR', $racerCR, PDO::PARAM_INT);
         $stmt->bindValue(':racerVOD', $racerVOD, PDO::PARAM_STR);
-        $stmt->bindValue(':id', $resultID, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $result_id, PDO::PARAM_INT);
         $stmt->execute();
 
         $stmt = $pdo->prepare("SELECT racerTeam FROM results WHERE id = :id");
-        $stmt->bindValue(':id', $resultID, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $result_id, PDO::PARAM_INT);
         $stmt->execute();
         $oldTeam = $stmt->fetchColumn();
         if ($oldTeam != $racerTeam) {
@@ -72,9 +72,9 @@ if ($errors != '') {
         $stmt = $pdo->prepare("SELECT id FROM races WHERE raceSlug = :raceSlug");
         $stmt->bindValue(':raceSlug', $raceSlug, PDO::PARAM_STR);
         $stmt->execute();
-        $raceID = $stmt->fetchColumn();
+        $race_id = $stmt->fetchColumn();
 
-        $notes = 'Result Edit! View your result here:<br /><a href="' . $domain . '/results/' . $raceID . '">' . $domain . '/results/' . $raceID . '</a>';
+        $notes = 'Result Edit! View your result here:<br /><a href="' . $domain . '/results/' . $race_id . '">' . $domain . '/results/' . $race_id . '</a>';
         echo '        <table class="submitAsync">' . PHP_EOL;
         echo '            <tbody>' . PHP_EOL;
         echo '                <tr><td colspan="2">' . $notes . '</td><tr>' . PHP_EOL;
@@ -110,15 +110,15 @@ if ($errors != '') {
         $stmt->bindValue(':racerForfeit', $racerForfeit, PDO::PARAM_STR);
         $stmt->bindValue(':racerCR', $racerCR, PDO::PARAM_INT);
         $stmt->bindValue(':racerVOD', $racerVOD, PDO::PARAM_STR);
-        $stmt->bindValue(':id', $resultID, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $result_id, PDO::PARAM_INT);
         $stmt->execute();
 
         $stmt = $pdo->prepare("SELECT id FROM races WHERE raceSlug = :raceSlug");
         $stmt->bindValue(':raceSlug', $raceSlug, PDO::PARAM_STR);
         $stmt->execute();
-        $raceID = $stmt->fetchColumn();
+        $race_id = $stmt->fetchColumn();
 
-        $notes = 'Result Edit! View your result here:<br /><a href="' . $domain . '/results/' . $raceID . '">' . $domain . '/results/' . $raceID . '</a>';
+        $notes = 'Result Edit! View your result here:<br /><a href="' . $domain . '/results/' . $race_id . '">' . $domain . '/results/' . $race_id . '</a>';
         echo '        <table class="submitAsync">' . PHP_EOL;
         echo '            <tbody>' . PHP_EOL;
         echo '                <tr><td colspan="2">' . $notes . '</td><tr>' . PHP_EOL;

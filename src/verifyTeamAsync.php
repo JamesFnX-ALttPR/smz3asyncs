@@ -7,23 +7,23 @@ if($errorCondition != null) {
     echo '        <table class="submitAsync">' . PHP_EOL;
     echo '            <caption>Confirm Results Submission</caption>' . PHP_EOL;
     echo '            <tbody>' . PHP_EOL;
-    $stmt = $pdo->prepare("SELECT racetimeID, racetimeDiscriminator FROM racerinfo WHERE racetimeName = :name");
+    $stmt = $pdo->prepare("SELECT racetimeID, rtgg_discriminator FROM racerinfo WHERE rtgg_name = :name");
     $stmt->bindValue(':name', $racer1Name, PDO::PARAM_STR);
     $stmt->execute();
     $racer1Row = $stmt->fetch();
     if ($racer1Row) {
-        $racer1Discrim = $racer1Row['racetimeDiscriminator'];
+        $racer1Discrim = $racer1Row['rtgg_discriminator'];
         $racer1Exists = 'y';
     } else {
         $racer1Discrim = null;
         $racer1Exists = 'n';
     }
-    $stmt = $pdo->prepare("SELECT racetimeID, racetimeDiscriminator FROM racerinfo WHERE racetimeName = :name");
+    $stmt = $pdo->prepare("SELECT racetimeID, rtgg_discriminator FROM racerinfo WHERE rtgg_name = :name");
     $stmt->bindValue(':name', $racer2Name, PDO::PARAM_STR);
     $stmt->execute();
     $racer2Row = $stmt->fetch();
     if ($racer2Row) {
-        $racer2Discrim = $racer2Row['racetimeDiscriminator'];
+        $racer2Discrim = $racer2Row['rtgg_discriminator'];
         $racer2Exists = 'y';
     } else {
         $racer2Discrim = null;
@@ -80,7 +80,7 @@ if($errorCondition != null) {
         }
         echo '</td></tr>' . PHP_EOL;
     }
-    echo '                <tr><td class="submitButton"><form method="post" action="' . $domain . '/async/' . $raceID . '"><input type="hidden" id="approved" name="approved" value="y" />';
+    echo '                <tr><td class="submitButton"><form method="post" action="' . $domain . '/async/' . $race_id . '"><input type="hidden" id="approved" name="approved" value="y" />';
     echo '<input type="hidden" id="teamName" name="teamName" value="' . $teamName . '" />';
     echo '<input type="hidden" id="teamForfeit" name="teamForfeit" value="' . $teamForfeit . '" />';
     echo '<input type="hidden" id="racer1Name" name="racer1Name" value="' . $racer1Name . '" />';
@@ -105,7 +105,7 @@ if($errorCondition != null) {
     if($racer2VOD != null) {
         echo '<input type="hidden" id="racer2VOD" name="racer2VOD" value="' . $racer2VOD . '" />';
     }
-    echo '<input type="Submit" class="submitButton" value="This is correct!" /></td><td></td><td class="submitAsync"><a href="' . $domain . '/async/' . $raceID . '" class="fakeButton">Take me back!</a></td></tr>' . PHP_EOL;
+    echo '<input type="Submit" class="submitButton" value="This is correct!" /></td><td></td><td class="submitAsync"><a href="' . $domain . '/async/' . $race_id . '" class="fakeButton">Take me back!</a></td></tr>' . PHP_EOL;
     echo '            </tbody>' . PHP_EOL;
     echo '        </table>' . PHP_EOL;
     if (isset($enteredBy)) {

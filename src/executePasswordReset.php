@@ -51,7 +51,7 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
 if ($errors != '') {
     echo '        <div class="error">' . $errors . 'Please use the link emailed and try again</div><hr />' . PHP_EOL;
 } else {
-    $sql = "UPDATE asyncusers SET password = :password, resetCallback = null WHERE email = :email";
+    $sql = "UPDATE asyncusers SET password = :password, callback_hash = null WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':email', $email, PDO::PARAM_STR);
     $stmt->bindValue(':password', password_hash($_POST['password'], PASSWORD_BCRYPT));

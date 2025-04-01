@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_GET['request'])) {
-    $stmt = $pdo->prepare("SELECT email FROM asyncusers WHERE resetCallback = :callback");
+    $stmt = $pdo->prepare("SELECT email FROM asyncusers WHERE callback_hash = :callback");
     $stmt->bindParam(':callback', $_GET['request'], PDO::PARAM_STR);
     $stmt->execute();
     $email = $stmt->fetchColumn();

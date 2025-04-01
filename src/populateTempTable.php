@@ -1,34 +1,33 @@
-<?php // Generate team information in temp table - getting $tempTableHash from page
+<?php // Generate team information in temp table - getting $temp_table_hash from page
 
 // Create table for results
 require_once ('../includes/functions.php');
 require_once ('../config/settings.php');
-$sql = "CREATE TABLE IF NOT EXISTS temp_" . $tempTableHash . " (teamName varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL, averageTime mediumint DEFAULT NULL, averageIGT mediumint DEFAULT NULL, averageCR smallint DEFAULT NULL, teamForfeit varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+$sql = "CREATE TABLE IF NOT EXISTS temp_" . $temp_table_hash . " (teamName varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL, averageTime mediumint DEFAULT NULL, averageIGT mediumint DEFAULT NULL, averageCR smallint DEFAULT NULL, teamForfeit varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 
 
 // Get list of teams in a race
 $stmt = $pdo->prepare("SELECT DISTINCT racerTeam FROM results WHERE raceSlug = ?");
-$stmt->execute([$raceSlug]);
+$stmt->execute([$race_slug]);
 
 // Determine if anyone on the team forfeitted
 while($row = $stmt->fetch()) {
     $racerTeam = $row['racerTeam'];
     $teamForfeit = 'n';
     $stmt2 = $pdo->prepare("SELECT racerForfeit FROM results WHERE raceSlug = ? AND racerTeam = ?");
-    $stmt2->execute([$raceSlug, $racerTeam]);
+    $stmt2->execute([$race_slug, $racerTeam]);
     while($row2 = $stmt2->fetch()) {
         if($row2['racerForfeit'] == 'y') {
             $teamForfeit = 'y';
         }
     }
     if($teamForfeit == 'y') { // Mark team as forfeitted if any player did
-        $sql3 = "INSERT INTO temp_" . $tempTableHash . " (teamName, teamForfeit) VALUES (?, 'y')";
+        $sql3 = "INSERT INTO temp_" . $temp_table_hash . " (teamName, teamForfeit) VALUES (?, 'y')";
         $stmt3 = $pdo->prepare($sql3);
         $stmt3->execute([$racerTeam]);
     } else { // Get average times and collection rate if no player forfeitted
-//        $stmt3 = $pdo->prepare("SELECT AVG(racerRealTime) FROM results WHERE raceSlug = ? AND racerTeam = ?");
         $stmt3 = $pdo->prepare("SELECT racerRealTime FROM results WHERE raceSlug = :slug AND racerTeam = :team ORDER BY racerRealTime DESC LIMIT 1");
         $stmt3->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
         $stmt3->bindParam(':team', $racerTeam, PDO::PARAM_STR);

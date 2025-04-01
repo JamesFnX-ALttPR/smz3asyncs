@@ -1,7 +1,7 @@
 <?php
 
 require_once ('../includes/bootstrap.php');
-
+require_once ('../includes/user_info.php');
 if(!isset($_GET['raceID'])) {
     $pageTitle = 'Error Viewing Async';
     require_once ('../includes/header.php');
@@ -9,9 +9,9 @@ if(!isset($_GET['raceID'])) {
     require_once ('../includes/footer.php');
     die;
 } else {
-    $raceID = $_GET['raceID'];
+    $race_id = $_GET['raceID'];
     $stmt = $pdo->prepare("SELECT * FROM races WHERE id = :id");
-    $stmt->bindParam(':id', $raceID, PDO::PARAM_INT);
+    $stmt->bindValue(':id', $race_id, PDO::PARAM_INT);
     $stmt->execute();
     $row = $stmt->fetch();
     if(! $row) {
@@ -21,67 +21,25 @@ if(!isset($_GET['raceID'])) {
         require_once ('../includes/footer.php');
         die;
     }
-    $raceSlug = $row['raceSlug'];
-    $raceMode = $row['raceMode'];
-    $raceSeed = $row['raceSeed'];
-    $raceHash = $row['raceHash'];
-    $raceDescription = $row['raceDescription'];
-    $raceIsTeam = $row['raceIsTeam'];
-    $raceIsSpoiler = $row['raceIsSpoiler'];
-    $raceSpoilerLink = $row['raceSpoilerLink'];
-    $raceFromRacetime = $row['raceFromRacetime'];
-    $raceVODRequired = $row['vodRequired'];
-    $raceLoginRequired = $row['loginRequired'];
-    $tourney_seed = $row['tournament_seed'];
-    $raceCreatedBy = $row['createdBy'];
-    $pageTitle = 'View Times for ' . $raceSlug;
-    if (is_post_request() && $_SESSION['userid'] == $raceCreatedBy) {
+    require ('../includes/race_info.php');
+    $pageTitle = 'View Times for ' . $race_slug;
+    if (is_post_request() && ($_SESSION['userid'] == $race_created_by || $admin_flag == 'y')) {
         $fields = array("'place'", "'name'", "'team'", "'rt_seconds'", "'cr'", "'comment'", "'forfeit'", "'vod_link'");
         $delimiter = ',';
-        $filename = 'alttprasyncs-' . $raceSlug . date("Y-m-d H:i:s") . '.csv';
+        $filename = 'smz3asyncs-' . $race_slug . date("Y-m-d H:i:s") . '.csv';
         $f = fopen('php://output', 'w');
         // In case, if php://output didn't work, uncomment below line
         // $f = fopen("php://memory", "w"); 
         fputcsv($f, $fields, $delimiter);
         $place = 0;
-        $stmt = $pdo->prepare("SELECT * FROM results WHERE raceSlug = :slug AND racerForfeit = 'n' ORDER BY racerRealTime");
-        $stmt->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
+        $stmt = $pdo->prepare("SELECT id FROM results WHERE raceSlug = :slug AND racerForfeit = 'n' ORDER BY racerRealTime");
+        $stmt->bindValue(':slug', $race_slug, PDO::PARAM_STR);
         $stmt->execute();
         while ($row = $stmt->fetch()) {
             $place++;
-            $racerID = $row['racerRacetimeID'];
-            if ($row['racerTeam'] == null) {
-                $racerTeam = '';
-            } else {
-                $racerTeam = $row['racerTeam'];
-            }
-            $racerForfeit = $row['racerForfeit'];
-            if ($racerForfeit == 'y') {
-                $racerRT = '';
-                $racerCR = '';
-            } else {
-                $racerRT = $row['racerRealTime'];
-                if ($row['racerCheckCount' == null]) {
-                    $racerCR = '';
-                } else {
-                    $racerCR = $row['racerCheckCount'];
-                }
-            }
-            if ($row['racerComment'] == null) {
-                $racerComment = '';
-            } else {
-                $racerComment = $row['racerComment'];
-            }
-            if ($row['racerVODLink'] == null) {
-                $racerVOD = '';
-            } else {
-                $racerVOD = $row['racerVODLink'];
-            }
-            $stmt2 = $pdo->prepare("SELECT racetimeName FROM racerinfo WHERE racetimeID = :id");
-            $stmt2->bindParam(':id', $racerID, PDO::PARAM_STR);
-            $stmt2->execute();
-            $racerName = $stmt2->fetchColumn();
-            $row_data = array($place, $racerName, $racerTeam, $racerRT, $racerCR, $racerComment, $racerForfeit, $racerVOD);
+            $result_id = $row['id'];
+            require ('../includes/result_info.php');
+            $row_data = array($place, $racer_name, $racer_team, $racer_time, $racer_collection_rate, $racer_comment, $racer_forfeit, $racer_vod);
             fputcsv($f, $row_data, $delimiter);
         }
         fclose ($f);
@@ -95,19 +53,19 @@ if(!isset($_GET['raceID'])) {
     }
 }
 require_once ('../includes/header.php');
-if ($raceLoginRequired == 'y' && ! isset($_SESSION['userid'])) {
+if ($race_login_flag == 'y' && ! isset($_SESSION['userid'])) {
     echo '        <div class="error">You must log in to submit or view results for this async.</div><br />' . PHP_EOL;
     include ('../src/loginForm.php');
-} elseif ($tourney_seed == 'y' && ! isset($_SESSION['userid'])) {
+} elseif ($race_tournament_flag == 'y' && ! isset($_SESSION['userid'])) {
     echo '        <div class="error">You must log in to submit or view results for this async.</div><br />' . PHP_EOL;
     include ('../src/loginForm.php');
-} elseif ($tourney_seed == 'y' && $raceCreatedBy != $_SESSION['userid']) {
+} elseif ($race_tournament_flag == 'y') {
     $stmt = $pdo->prepare('SELECT COUNT(id) FROM results WHERE raceSlug = :slug AND enteredBy = :id');
-    $stmt->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
+    $stmt->bindParam(':slug', $race_slug, PDO::PARAM_STR);
     $stmt->bindParam(':id', $_SESSION['userid'], PDO::PARAM_INT);
     $stmt->execute();
     $rslt = $stmt->fetchColumn();
-    if (!$rslt) {
+    if (!$rslt && $race_created_by != $_SESSION['userid']) {
         echo '        <div class="error">Only racers who have submitted a result may view results for this async.<br />Click <a href="' . $domain . '/async/' . $raceID . '">here</a> to submit a result.</div><br />' . PHP_EOL;
     }
 } else {

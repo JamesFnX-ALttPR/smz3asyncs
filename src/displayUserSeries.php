@@ -1,7 +1,7 @@
 <?php
 
 //Determine if logged in account is an admin
-$stmt = $pdo->prepare("SELECT is_admin FROM asyncusers WHERE id = :id");
+$stmt = $pdo->prepare("SELECT admin_flag FROM asyncusers WHERE id = :id");
 $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
 $stmt->execute();
 $isAdmin = $stmt->fetchColumn();
@@ -9,7 +9,7 @@ $isAdmin = $stmt->fetchColumn();
 //Display asyncs that the user has created and give options for editing
 $rowCounter = 0;
 echo '        <table class="searchResults sortable">' . PHP_EOL;
-echo '            <caption class="searchResults">Series Created By ' . $_SESSION['displayName'] . '</caption>' . PHP_EOL;
+echo '            <caption class="searchResults">Series Created By ' . $_SESSION['display_name'] . '</caption>' . PHP_EOL;
 if ($isAdmin == 'y') { //Admins can edit *all* submitted series
     $stmt = $pdo->prepare("SELECT * FROM series");
     $stmt->execute();
@@ -27,16 +27,16 @@ while($row = $stmt->fetch()) {
         $startOfRow = '                <tr class="odd">';
     }
     $seriesID = $row['id'];
-    $seriesName = $row['seriesName'];
-    $seriesDescription = $row['seriesDescription'];
-    $seriesMembers = $row['seriesMembers'];
-    if ($seriesMembers == null) {
+    $series_name = $row['series_name'];
+    $series_description = $row['series_description'];
+    $series_members = $row['series_members'];
+    if ($series_members == null) {
         $seriesCount = 0;
     } else {
-        $memberArray = explode(', ', $seriesMembers);
+        $memberArray = explode(', ', $series_members);
         $seriesCount = count($memberArray);
     }
-    echo $startOfRow . '<td><a href="' . $domain . '/series/' . $seriesID . '">' . $seriesName . '</a></td><td>' . $seriesDescription . '</td><td>' . $seriesCount . '</td><td><a href="' . $domain . '/editseries/' . $seriesID . '">Edit Series</a></td></tr>' . PHP_EOL;
+    echo $startOfRow . '<td><a href="' . $domain . '/series/' . $seriesID . '">' . $series_name . '</a></td><td>' . $series_description . '</td><td>' . $seriesCount . '</td><td><a href="' . $domain . '/editseries/' . $seriesID . '">Edit Series</a></td></tr>' . PHP_EOL;
 }
 echo '        </table><br /><hr />' . PHP_EOL;
 

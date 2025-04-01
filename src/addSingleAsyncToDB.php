@@ -1,12 +1,12 @@
 <?php
 $errorCondition = null;
-$stmt = $pdo->prepare("SELECT id FROM results WHERE raceSlug = :slug AND racerRacetimeID in (SELECT racetimeID FROM racerinfo WHERE racetimeName = :name)");
-$stmt->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
+$stmt = $pdo->prepare("SELECT id FROM results WHERE raceSlug = :slug AND racerRacetimeID in (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :name)");
+$stmt->bindParam(':slug', $race_slug, PDO::PARAM_STR);
 $stmt->bindParam(':name', $_POST['racer1Name'], PDO::PARAM_STR);
 $stmt->execute();
 $row = $stmt->fetchColumn();
 if(! $row) {
-    $stmt2 = $pdo->prepare("SELECT racetimeID FROM racerinfo WHERE racetimeName = :name");
+    $stmt2 = $pdo->prepare("SELECT racetimeID FROM racerinfo WHERE rtgg_name = :name");
     $stmt2->bindParam(':name', $_POST['racer1Name'], PDO::PARAM_STR);
     $stmt2->execute();
     $row2 = $stmt2->fetchColumn();
@@ -21,7 +21,7 @@ if(! $row) {
                 break;
             }
         }
-        $stmt3 = $pdo->prepare("INSERT INTO racerinfo (racetimeID, racetimeName) VALUES (:id, :name)");
+        $stmt3 = $pdo->prepare("INSERT INTO racerinfo (racetimeID, rtgg_name) VALUES (:id, :name)");
         $stmt3->bindParam(':id', $racerID, PDO::PARAM_STR);
         $stmt3->bindParam(':name', $_POST['racer1Name'], PDO::PARAM_STR);
         $stmt3->execute();
@@ -52,7 +52,7 @@ if(! $row) {
             $enteredBy = null;
         }
         $insertSQL = $pdo->prepare("INSERT INTO results (raceSlug, racerRacetimeID, racerTeam, racerRealTime, racerComment, racerForfeit, racerFromRacetime, racerCheckCount, racerVODLink, enteredBy) VALUES (:slug, :id, '', :rt, :comment, :forfeit, 'n', :cr, :vod, :enteredBy)");
-        $insertSQL->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
+        $insertSQL->bindParam(':slug', $race_slug, PDO::PARAM_STR);
         $insertSQL->bindParam(':id', $racerID, PDO::PARAM_STR);
         $insertSQL->bindParam(':rt', $racerRT, PDO::PARAM_INT);
         $insertSQL->bindParam(':comment', $racerComment, PDO::PARAM_STR);
@@ -78,7 +78,7 @@ if(! $row) {
             $enteredBy = null;
         }
         $insertSQL = $pdo->prepare("INSERT INTO results (raceSlug, racerRacetimeID, racerTeam, racerRealTime, racerComment, racerForfeit, racerFromRacetime, racerVODLink, enteredBy) VALUES (:slug, :id, '', 20000, :comment, :forfeit, 'n', :vod, :enteredBy)");
-        $insertSQL->bindParam(':slug', $raceSlug, PDO::PARAM_STR);
+        $insertSQL->bindParam(':slug', $race_slug, PDO::PARAM_STR);
         $insertSQL->bindParam(':id', $racerID, PDO::PARAM_STR);
         $insertSQL->bindParam(':comment', $racerComment, PDO::PARAM_STR);
         $insertSQL->bindParam(':forfeit', $racerForfeit, PDO::PARAM_STR);

@@ -1,11 +1,11 @@
 <?php
 
 echo '        <table class="searchResults">' . PHP_EOL;
-echo '            <tr><td class="rightAlign" colspan="3"><label for="name">Series Name:</label> </td><td colspan="3"><input size="50" type="text" id="name" name="name" form="editSeries" value="' . $seriesName . '" required /></td></tr>' . PHP_EOL;
+echo '            <tr><td class="rightAlign" colspan="3"><label for="name">Series Name:</label> </td><td colspan="3"><input size="50" type="text" id="name" name="name" form="editSeries" value="' . $series_name . '" required /></td></tr>' . PHP_EOL;
 echo '            <tr><td class="rightAlign" colspan="3"><label for="desc">Series Description:</label> </td><td colspan="3"><textarea id="desc" name="desc" form="editSeries" rows="3" cols="49" required>' . $seriesDesc . '</textarea></td></tr>' . PHP_EOL;
 echo '            <tr><td class="centerAlign" colspan="6"><input type="submit" class="submitButton" form="editSeries" value="Update Series Info" /></td></tr>' . PHP_EOL;
 echo '            <tr><th>Date (UTC)</th><th>Mode</th><th>Description</th><th>Racetime Room</th><th>Hash</th><th><form method="post" action="' . $domain . '/editseries/' . $seriesID . '" id="editSeries"><input type="submit" class="submitButton" form="editSeries" value="Delete Checked Races" /></form></tr>' . PHP_EOL;
-$memberArray = explode(', ', $seriesMembers);
+$memberArray = explode(', ', $series_members);
 $rowCounter = 0;
 foreach($memberArray as $raceID) {
     $raceID = intval($raceID);

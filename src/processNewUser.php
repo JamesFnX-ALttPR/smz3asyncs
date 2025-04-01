@@ -61,8 +61,7 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
 } else {
     $errors .= 'Please complete CAPTCHA.<br />';
 }
-
-$displayName = strip_tags($_POST['displayName']);
+$display_name = strip_tags($_POST['display_name']);
 
 // Output errors if needed, otherwise add to database and load login page
 if ($errors != '') {
@@ -70,11 +69,11 @@ if ($errors != '') {
     require_once ('../src/inputNewUser.php');
 } else {
     $login_ip = $_SERVER['REMOTE_ADDR'];
-    $sql = "INSERT INTO asyncusers (email, password, is_admin, displayName, registered_ip, registered_date) VALUES (:email, :password, 'n', :displayName, :ip, NOW())";
+    $sql = "INSERT INTO asyncusers (email, password, admin_flag, display_name, registered_ip, registered_date) VALUES (:email, :password, 'n', :display_name, :ip, NOW())";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':email', $email, PDO::PARAM_STR);
     $stmt->bindValue(':password', password_hash($_POST['password'], PASSWORD_BCRYPT));
-    $stmt->bindValue(':displayName', $displayName, PDO::PARAM_STR);
+    $stmt->bindValue(':display_name', $display_name, PDO::PARAM_STR);
     $stmt->bindValue(':ip', $login_ip, PDO::PARAM_STR);
     $stmt->execute();
     echo '        <div class="error">User successfully registered. Please log in.</div><hr />' . PHP_EOL;

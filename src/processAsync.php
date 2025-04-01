@@ -1,20 +1,20 @@
 <?php
 
-//Variables passed from form: seed (required), mode (required). hash1-4 (required), description, spoiler, spoilerLog, team, loginRequired, vodRequired, editDisallowed
+//Variables passed from form: seed (required), mode (required). hash1-4 (required), description, spoiler, spoiler_log, team, login_required, vod_required, edits_allowed, tournament_seed
 //Process form input and output errors or confirmation screen
 
 $errors = null; //Set error variable to empty, check for errors at the end
 $notes = null; //Things that don't break the submission, but should be presented on the confirmation screen
 
-$newSeed = filter_var($_POST['seed'], FILTER_SANITIZE_URL);
-if (! filter_var($newSeed, FILTER_VALIDATE_URL)) { //Check if seed URL is a valid URL
+$seed = filter_var($_POST['seed'], FILTER_SANITIZE_URL);
+if (! filter_var($seed, FILTER_VALIDATE_URL)) { //Check if seed URL is a valid URL
     $errors .= 'Seed is not a valid URL.<br />';
 }
 
-$newMode = strip_tags($_POST['mode']);
+$mode = strip_tags($_POST['mode']);
 //Check if mode exists in the database already
 $stmt = $pdo->prepare("SELECT id FROM modes WHERE name = :name");
-$stmt->bindValue(':name', $newMode, PDO::PARAM_STR);
+$stmt->bindValue(':name', $mode, PDO::PARAM_STR);
 $stmt->execute();
 $row = $stmt->fetchColumn();
 if (! $row) {
@@ -22,55 +22,55 @@ if (! $row) {
 }
 
 if ($_POST['description'] != '') {
-    $newDescription = strip_tags($_POST['description']);
+    $description = strip_tags($_POST['description']);
 } else {
-    $newDescription = '';
+    $description = '';
 }
 
-$newHash = '(' . $_POST['hash1'] . ' ' . $_POST['hash2'] . ' ' . $_POST['hash3'] . ' ' . $_POST['hash4'] . ')';
+$hash = '(' . $_POST['hash1'] . ' ' . $_POST['hash2'] . ' ' . $_POST['hash3'] . ' ' . $_POST['hash4'] . ')';
 
 if (isset($_POST['spoiler'])) { //Check if this is a spoiler seed and validate spoiler log URL
-    $newSpoiler = 'y';
-    $newSpoilerLog = filter_var($_POST['spoilerLog'], FILTER_SANITIZE_URL);
-    if (! filter_var($newSpoilerLog, FILTER_VALIDATE_URL)) { 
+    $spoiler = 'y';
+    $spoiler_log = filter_var($_POST['spoiler_log'], FILTER_SANITIZE_URL);
+    if (! filter_var($spoiler_log, FILTER_VALIDATE_URL)) { 
         $errors .= 'Spoiler log is not a valid URL.<br />';
     }
 } else {
-    $newSpoiler = 'n';
+    $spoiler = 'n';
 }
 
 if (isset($_POST['team'])) {
-    $newTeam = 'y';
+    $team = 'y';
 } else {
-    $newTeam = 'n';
+    $team = 'n';
 }
 
-if (isset($_POST['loginRequired'])) {
-    $newLoginRequired = 'y';
+if (isset($_POST['login_required'])) {
+    $login_required = 'y';
 } else {
-    $newLoginRequired = 'n';
+    $login_required = 'n';
 }
 
-if (isset($_POST['vodRequired'])) {
-    $newVODRequired = 'y';
+if (isset($_POST['vod_required'])) {
+    $vod_required = 'y';
 } else {
-    $newVODRequired = 'n';
+    $vod_required = 'n';
 }
 
-if (isset($_POST['editDisallowed'])) {
-    $newAllowResultEdits = 'n';
+if (isset($_POST['edits_allowed'])) {
+    $edits_allowed = 'n';
 } else {
-    $newAllowResultEdits = 'y';
+    $edits_allowed = 'y';
 }
 if (isset($_POST['tournament_seed'])) {
-    $newtournament_seed = 'y';
+    $tournament_seed = 'y';
 } else {
-    $newtournament_seed = 'n';
+    $tournament_seed = 'n';
 }
 
 // Check if seed exists in DB, stop and write errors if so
 $stmt = $pdo->prepare("SELECT id FROM races WHERE raceSeed = :raceSeed");
-$stmt->bindValue(':raceSeed', $newSeed, PDO::PARAM_STR);
+$stmt->bindValue(':raceSeed', $seed, PDO::PARAM_STR);
 $stmt->execute();
 $row = $stmt->fetchColumn();
 if ($row) {
@@ -89,78 +89,78 @@ if ($errors != null) {
     if ($notes != null) {
         echo '                <tr><td colspan="2">' . $notes . '</td><tr>' . PHP_EOL;
     }
-    echo '                <tr><th class="rightAlign">Link to Seed:</th><td>' . $newSeed . '</td></tr>' . PHP_EOL;
-    echo '                <tr><th class="rightAlign">Mode:</th><td>' . $newMode . '</td></tr>' . PHP_EOL;
-    echo '                <tr><th class="rightAlign">Hash:</th><td>' . hashToTable($newHash) . '</td></tr>' . PHP_EOL;
-    if ($newDescription != '') {
-        echo '                <tr><th class="rightAlign">Description:</th><td>' . $newDescription . '</td></tr>' . PHP_EOL;
+    echo '                <tr><th class="rightAlign">Link to Seed:</th><td>' . $seed . '</td></tr>' . PHP_EOL;
+    echo '                <tr><th class="rightAlign">Mode:</th><td>' . $mode . '</td></tr>' . PHP_EOL;
+    echo '                <tr><th class="rightAlign">Hash:</th><td>' . hashToTable($hash) . '</td></tr>' . PHP_EOL;
+    if ($description != '') {
+        echo '                <tr><th class="rightAlign">Description:</th><td>' . $description . '</td></tr>' . PHP_EOL;
     }
-    $toggleModes = '';
-    if ($newSpoiler == 'y') {
-        $toggleModes .= 'Spoiler';
+    $toggle_modes = '';
+    if ($spoiler == 'y') {
+        $toggle_modes .= 'Spoiler';
     }
-    if ($newTeam == 'y') {
-        if ($toggleModes) {
-            $toggleModes .= ' - Team/Co-op';
+    if ($team == 'y') {
+        if ($toggle_modes) {
+            $toggle_modes .= ' - Team/Co-op';
         } else {
-            $toggleModes .= 'Team/Co-op';
+            $toggle_modes .= 'Team/Co-op';
         }
     }
-    if ($newLoginRequired == 'y') {
-        if ($toggleModes) {
-            $toggleModes .= ' - Login Required';
+    if ($login_required == 'y') {
+        if ($toggle_modes) {
+            $toggle_modes .= ' - Login Required';
         } else {
-            $toggleModes .= 'Login Required';
+            $toggle_modes .= 'Login Required';
         }
     }
-    if ($newVODRequired == 'y') {
-        if ($toggleModes) {
-            $toggleModes .= ' - VOD Required';
+    if ($vod_required == 'y') {
+        if ($toggle_modes) {
+            $toggle_modes .= ' - VOD Required';
         } else {
-            $toggleModes .= 'VOD Required';
+            $toggle_modes .= 'VOD Required';
         }
     }
-    if ($newAllowResultEdits == 'n') {
-        if ($toggleModes) {
-            $toggleModes .= ' - Edits Disallowed';
+    if ($edits_allowed == 'n') {
+        if ($toggle_modes) {
+            $toggle_modes .= ' - Edits Disallowed';
         } else {
-            $toggleModes .= 'Edits Disallowed';
+            $toggle_modes .= 'Edits Disallowed';
         }
     }
-    if ($newtournament_seed == 'y') {
-        if ($toggleModes) {
-            $toggleModes .= ' - Tournament Seed';
+    if ($tournament_seed == 'y') {
+        if ($toggle_modes) {
+            $toggle_modes .= ' - Tournament Seed';
         } else {
-            $toggleModes .= 'Tournament Seed';
+            $toggle_modes .= 'Tournament Seed';
         }
     }
-        if ($toggleModes != '') {
-        echo '                <tr><td colspan="2" class="centerAlign">' . $toggleModes . '</td></tr>' . PHP_EOL;
+        if ($toggle_modes != '') {
+        echo '                <tr><td colspan="2" class="centerAlign">' . $toggle_modes . '</td></tr>' . PHP_EOL;
     }
-    if ($newSpoiler == 'y') {
-        echo '                <tr><th class="rightAlign">Link to Spoiler Log: </th><td>' . $newSpoilerLog . '</td></tr>' . PHP_EOL;
+    if ($spoiler == 'y') {
+        echo '                <tr><th class="rightAlign">Link to Spoiler Log: </th><td>' . $spoiler_log . '</td></tr>' . PHP_EOL;
     }
-    echo '                <tr><td class="centerAlign" colspan="2" class="submitButton"><form method="post" action="' . $domain . '/createasync"><input type="submit" class="submitButton" value="This is correct!" /> <a href="' . $domain . '/createasync" class="fakeButton">Take me back!</a><input type="hidden" id="approved" name="approved" value="y" /><input type="hidden" id="newSeed" name="newSeed" value="' . $newSeed . '" /><input type="hidden" id="newMode" name="newMode" value="' . $newMode . '" /><input type="hidden" id="newHash" name="newHash" value="' . $newHash . '" />';
-    if ($newDescription != '') {
-        echo '<input type="hidden" id="newDescription" name="newDescription" value="' . $newDescription . '" />';
+    echo '                <tr><td class="centerAlign" colspan="2" class="submitButton"><form method="post" action="' . $domain . '/createasync"><input type="submit" class="submitButton" value="This is correct!" /> <a href="' . $domain . '/createasync" class="fakeButton">Take me back!</a><input type="hidden" id="approved" name="approved" value="y" /><input type="hidden" id="seed" name="seed" value="' . $seed . '" /><input type="hidden" id="mode" name="mode" value="' . $mode . '" /><input type="hidden" id="hash" name="hash" value="' . $hash . '" />';
+    if ($description != '') {
+        echo '<input type="hidden" id="description" name="description" value="' . $description . '" />';
     }
-    if ($newSpoiler == 'y') {
-        echo '<input type="hidden" id="newSpoiler" name="newSpoiler" value="' . $newSpoiler . '" /><input type="hidden" id="newSpoilerLog" name="newSpoilerLog" value="' . $newSpoilerLog . '" />';
+    if ($spoiler == 'y') {
+        echo '<input type="hidden" id="spoiler" name="spoiler" value="' . $spoiler . '" /><input type="hidden" id="spoiler_log" name="spoiler_log" value="' . $spoiler_log . '" />';
     }
-    if ($newTeam == 'y') {
-        echo '<input type="hidden" id="newTeam" name="newTeam" value="' . $newTeam . '" />';
+    if ($team == 'y') {
+        echo '<input type="hidden" id="team" name="team" value="' . $team . '" />';
     }
-    if ($newLoginRequired == 'y') {
-        echo '<input type="hidden" id="newLoginRequired" name="newLoginRequired" value="' . $newLoginRequired . '" />';
+    if ($login_required == 'y') {
+        echo '<input type="hidden" id="login_required" name="login_required" value="' . $login_required . '" />';
     }
-    if ($newVODRequired == 'y') {
-        echo '<input type="hidden" id="newVODRequired" name="newVODRequired" value="' . $newVODRequired . '" />';
+    if ($vod_required == 'y') {
+        echo '<input type="hidden" id="vod_required" name="vod_required" value="' . $vod_required . '" />';
     }
-    if ($newAllowResultEdits == 'n') {
-        echo '<input type="hidden" id="newVODRequired" name="newAllowResultEdits" value="' . $newAllowResultEdits . '" />';
+    if ($edits_allowed == 'n') {
+        echo '<input type="hidden" id="vod_required" name="edits_allowed" value="' . $edits_allowed . '" />';
     }
-    if ($newtournament_seed == 'y') {
-        echo '<input type="hidden" id="newtournament_seed" name="newtournament_seed" value="' . $newtournament_seed . '" />';
+    if ($tournament_seed == 'y') {
+        echo '<input type="hidden" id="tournament_seed" name="tournament_seed" value="' . $tournament_seed . '" />';
     }
     echo '</td></tr>' . PHP_EOL;
     echo '            </tbody>' . PHP_EOL;
