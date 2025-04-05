@@ -28,7 +28,7 @@ echo '                    $(\'.select2-search__field\').val(e.key);' . PHP_EOL;
 echo '                }, 100);' . PHP_EOL;
 echo '            });' . PHP_EOL;
 echo '        </script>' . PHP_EOL;
-echo '        <div class="topline"><a class="toplinks" href="' . $domain . '/search">Search</a>';
+echo '        <div class="topline"><a class="toplinks" href="' . $domain . '">Search</a>';
 $stmt = $pdo->prepare("SELECT id FROM series");
 $stmt->execute();
 $chk = $stmt->fetchColumn();
