@@ -109,6 +109,8 @@ if ($raceLoginRequired == 'y' && ! isset($_SESSION['userid'])) {
     $rslt = $stmt->fetchColumn();
     if (!$rslt) {
         echo '        <div class="error">Only racers who have submitted a result may view results for this async.<br />Click <a href="' . $domain . '/async/' . $raceID . '">here</a> to submit a result.</div><br />' . PHP_EOL;
+    } else {
+        require_once ('../src/displayResults.php');
     }
 } else {
     require_once ('../src/displayResults.php');
