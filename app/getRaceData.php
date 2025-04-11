@@ -111,10 +111,10 @@ for($i=0;$i<$slug_count;$i++) {
                     $stmt->execute([$playerRacetimeID]);
                     $racetimeIDExists = $stmt->fetchColumn();
                     if(! $racetimeIDExists) {
-                        $sql = "INSERT INTO racerinfo (racetimeID, racetimeName, racetimeDiscriminator) VALUES (?, ?, ?)";
+                        $sql = "INSERT INTO racerinfo (racetimeID, rtgg_name, rtgg_discriminator) VALUES (?, ?, ?)";
                         $pdo->prepare($sql)->execute([$playerRacetimeID, $playerName, $playerDiscriminator]);
                     } else {
-                        $sql = "UPDATE racerinfo SET racetimeName = ?, racetimeDiscriminator = ? WHERE racetimeID = ?";
+                        $sql = "UPDATE racerinfo SET rtgg_name = ?, rtgg_discriminator = ? WHERE racetimeID = ?";
                         $pdo->prepare($sql)->execute([$playerName, $playerDiscriminator, $playerRacetimeID]);
                     }
                 }

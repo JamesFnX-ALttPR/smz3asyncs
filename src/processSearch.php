@@ -1,35 +1,32 @@
 <?php
 //Series creation section
-if (isset($_SESSION['userid'])) { // Check if user is an admin or has rights to create a series
-    $stmt = $pdo->prepare("SELECT is_admin, is_seriesMaker FROM asyncusers WHERE id = :id");
-    $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
-    $stmt->execute();
-    $rslt = $stmt->fetch();
-    $isAdmin = $rslt['is_admin'];
-    $isSeriesMaker = $rslt['is_seriesMaker'];
-} else {
-    $isAdmin = 'n';
-    $isSeriesMaker = 'n';
+if (isset ($_SESSION['userid'])) {
+    $user_id = $_SESSION['userid'];
+    require_once ('../includes/user_info.php');
 }
 // Find out if there are any series to add races to - if so, we'll add a column and form for that
-if ($isAdmin == 'y') {
-    $stmt = $pdo->prepare("SELECT id FROM series");
-    $stmt->execute();
-    $rslt = $stmt->fetchColumn();
-    if ($rslt) {
-        $seriesColumn = 'y';
-    } else {
-        $seriesColumn = 'n';
+if (isset ($admin_flag)) {
+    if ($admin_flag == 'y') {
+        $stmt = $pdo->prepare("SELECT id FROM series");
+        $stmt->execute();
+        $rslt = $stmt->fetchColumn();
+        if ($rslt) {
+            $seriesColumn = 'y';
+        } else {
+            $seriesColumn = 'n';
+        }
     }
-} elseif ($isSeriesMaker == 'y') {
-    $stmt = $pdo->prepare("SELECT id FROM series WHERE createdBy = :createdBy");
-    $stmt->bindValue(':createdBy', $_SESSION['userid'], PDO::PARAM_INT);
-    $stmt->execute();
-    $rslt = $stmt->fetchColumn();
-    if ($rslt) {
-        $seriesColumn = 'y';
-    } else {
-        $seriesColumn = 'n';
+} elseif (isset ($series_flag)) {
+    if ($series_flag == 'y') {
+        $stmt = $pdo->prepare("SELECT id FROM series WHERE createdBy = :createdBy");
+        $stmt->bindValue(':createdBy', $_SESSION['userid'], PDO::PARAM_INT);
+        $stmt->execute();
+        $rslt = $stmt->fetchColumn();
+        if ($rslt) {
+            $seriesColumn = 'y';
+        } else {
+            $seriesColumn = 'n';
+        }
     }
 } else {
     $seriesColumn = 'n';
@@ -60,7 +57,6 @@ if (isset($_POST['filter_coop'])) {
 }
 if ($searchTerm == '' && $searchHash == '') {
     echo '        <div class="error">You must search for a term or a full hash. Please try again.</div>' . PHP_EOL;
-    include('../src/selectJS.php');
     include('../src/inputSearch.php');
 } else {
     if($_POST['startDate'] != '') {
@@ -78,13 +74,14 @@ if ($searchTerm == '' && $searchHash == '') {
     } else {
         $dateQuery = '';
     }
+    // Let's make the SQL query
     if ($searchTerm != '' && $searchHash != '') {
-        $searchQuery = "SELECT COUNT(id) FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery;
+        $searchQuery = "SELECT COUNT(id) FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery;
         if (isset($includeRunner) && $includeRunner != '') {
-            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
         }
         if (isset($excludeRunner) && $excludeRunner !== '') {
-            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
         }
         if (isset($raceType)) {
             if ($raceType == 'racetime') {
@@ -103,19 +100,19 @@ if ($searchTerm == '' && $searchHash == '') {
         $searchQuery .= " ORDER BY raceStart DESC";
         $stmt = $pdo->prepare($searchQuery);
         $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-        $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+        $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
         $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
         $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
         $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
         $stmt->bindValue(':raceHash', $searchHash, PDO::PARAM_STR);
         $stmt->execute();
     } elseif ($searchTerm != '' && $searchHash == '') {
-        $searchQuery = "SELECT COUNT(id) FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery;
+        $searchQuery = "SELECT COUNT(id) FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery;
         if (isset($includeRunner) && $includeRunner != '') {
-            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
         }
         if (isset($excludeRunner) && $excludeRunner != '') {
-            $searchQuery .= " AND raceSlug NOT IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+            $searchQuery .= " AND raceSlug NOT IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
         }
         if (isset($raceType)) {
             if ($raceType == 'racetime') {
@@ -134,7 +131,7 @@ if ($searchTerm == '' && $searchHash == '') {
         $searchQuery .= " ORDER BY raceStart DESC";
         $stmt = $pdo->prepare($searchQuery);
         $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-        $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+        $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
         $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
         $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
         $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
@@ -142,10 +139,10 @@ if ($searchTerm == '' && $searchHash == '') {
     } elseif ($searchTerm == '' && $searchHash != '') {
         $searchQuery = "SELECT COUNT(id) FROM races WHERE tournament_seed = 'n' AND raceHash = :raceHash" . $dateQuery;
         if (isset($includeRunner) && $includeRunner != '') {
-            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
         }
         if (isset($excludeRunner) && $excludeRunner != '') {
-            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+            $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
         }
         if (isset($raceType)) {
             if ($raceType == 'racetime') {
@@ -169,34 +166,33 @@ if ($searchTerm == '' && $searchHash == '') {
     $rslt = $stmt->fetchColumn();
     if (! $rslt) {
         echo '        <div class="error">No results found for your search. Please try again.</div>' . PHP_EOL;
-        include('../src/selectJS.php');
         include('../src/inputSearch.php');
     } else {
         if ($searchTerm != '' && $searchHash != '') {
-            $searchQuery = "SELECT racetimeName FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery . ")) ORDER BY racetimeName";
+            $searchQuery = "SELECT rtgg_name FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery . ")) ORDER BY rtgg_name";
             $stmt = $pdo->prepare($searchQuery);
             $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-            $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
             $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceHash', $searchHash, PDO::PARAM_STR);
         } elseif ($searchTerm != '' && $searchHash == '') {
-            $searchQuery = "SELECT racetimeName FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery . ")) ORDER BY racetimeName";
+            $searchQuery = "SELECT rtgg_name FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery . ")) ORDER BY rtgg_name";
             $stmt = $pdo->prepare($searchQuery);
             $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-            $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
             $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
         } elseif ($searchTerm == '' && $searchHash != '') {
-            $searchQuery = "SELECT racetimeName FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE raceHash = :raceHash" . $dateQuery . ")) ORDER BY racetimeName";
+            $searchQuery = "SELECT rtgg_name FROM racerinfo WHERE racetimeID in (SELECT racerRacetimeID FROM results WHERE raceSlug in (SELECT raceSlug FROM races WHERE raceHash = :raceHash" . $dateQuery . ")) ORDER BY rtgg_name";
             $stmt = $pdo->prepare($searchQuery);
             $stmt->bindValue(':raceHash', $searchHash, PDO::PARAM_STR);
         }
         $stmt->execute();
         while ($row = $stmt->fetch()) {
-            $players[] = $row['racetimeName'];
+            $players[] = $row['rtgg_name'];
         }
         echo '        <form id="refineSearch" method="post" action="">' . PHP_EOL;
         echo '            <table class="searchRefine">' . PHP_EOL;
@@ -256,12 +252,12 @@ if ($searchTerm == '' && $searchHash == '') {
         echo '            </thead>' . PHP_EOL;
         echo '            <tbody>' . PHP_EOL;
         if ($searchTerm != '' && $searchHash != '') {
-            $searchQuery = "SELECT * FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery;
+            $searchQuery = "SELECT id FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription OR raceHash = :raceHash)" . $dateQuery;
             if (isset($includeRunner) && $includeRunner != '') {
-                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
             }
             if (isset($excludeRunner) && $excludeRunner !== '') {
-                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
             }
             if (isset($raceType)) {
                 if ($raceType == 'racetime') {
@@ -280,19 +276,19 @@ if ($searchTerm == '' && $searchHash == '') {
             $searchQuery .= " ORDER BY raceStart DESC";
             $stmt = $pdo->prepare($searchQuery);
             $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-            $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
             $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceHash', $searchHash, PDO::PARAM_STR);
             $stmt->execute();
         } elseif ($searchTerm != '' && $searchHash == '') {
-            $searchQuery = "SELECT * FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = :racetimeName)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery;
+            $searchQuery = "SELECT id FROM races WHERE tournament_seed = 'n' AND (raceMode = :raceMode OR raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = :rtgg_name)) OR raceSlug LIKE :raceSlug OR raceSeed LIKE :raceSeed OR raceDescription LIKE :raceDescription)" . $dateQuery;
             if (isset($includeRunner) && $includeRunner != '') {
-                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
             }
             if (isset($excludeRunner) && $excludeRunner != '') {
-                $searchQuery .= " AND raceSlug NOT IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+                $searchQuery .= " AND raceSlug NOT IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
             }
             if (isset($raceType)) {
                 if ($raceType == 'racetime') {
@@ -311,18 +307,18 @@ if ($searchTerm == '' && $searchHash == '') {
             $searchQuery .= " ORDER BY raceStart DESC";
             $stmt = $pdo->prepare($searchQuery);
             $stmt->bindValue(':raceMode', $searchTerm, PDO::PARAM_STR);
-            $stmt->bindValue(':racetimeName', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindValue(':rtgg_name', $searchTerm, PDO::PARAM_STR);
             $stmt->bindValue(':raceSlug', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceSeed', $searchTermLike, PDO::PARAM_STR);
             $stmt->bindValue(':raceDescription', $searchTermLike, PDO::PARAM_STR);
             $stmt->execute();
         } elseif ($searchTerm == '' && $searchHash != '') {
-            $searchQuery = "SELECT * FROM races WHERE tournament_seed = 'n' AND raceHash = :raceHash" . $dateQuery;
+            $searchQuery = "SELECT id FROM races WHERE tournament_seed = 'n' AND raceHash = :raceHash" . $dateQuery;
             if (isset($includeRunner) && $includeRunner != '') {
-                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $includeRunner . "'))";
+                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $includeRunner . "'))";
             }
             if (isset($excludeRunner) && $excludeRunner != '') {
-                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE racetimeName = '" . $excludeRunner . "'))";
+                $searchQuery .= " AND raceSlug IN (SELECT raceSlug FROM results WHERE racerRacetimeID NOT IN (SELECT racetimeID FROM racerinfo WHERE rtgg_name = '" . $excludeRunner . "'))";
             }
             if (isset($raceType)) {
                 if ($raceType == 'racetime') {
@@ -351,58 +347,28 @@ if ($searchTerm == '' && $searchHash == '') {
             } else {
                 $startOfRow = '                <tr class="odd">';
             }
-            $raceID = $row['id'];
-            $raceSlug = $row['raceSlug'];
-            $raceStart = $row['raceStart'];
-            $raceMode = $row['raceMode'];
-            $raceSeed = $row['raceSeed'];
-            $raceHash = $row['raceHash'];
-            if(strlen($row['raceDescription']) > 63) { $raceDescription = substr($row['raceDescription'], 0, 60) . '...'; } else { $raceDescription = $row['raceDescription']; }
-            $raceIsTeam = $row['raceIsTeam'];
-            $raceIsSpoiler = $row['raceIsSpoiler'];
-            $raceSpoilerLink = $row['raceSpoilerLink'];
-            $raceFromRacetime = $row['raceFromRacetime'];
-            if($raceIsTeam == 'y') {
-                if ($raceDescription != '') {
-                $raceDescription = 'CO-OP/TEAM - ' . $raceDescription;
-                } else {
-                    $raceDescription = 'CO-OP/TEAM';
-                }
-                $teamCountSQL = $pdo->prepare("SELECT COUNT(DISTINCT racerTeam) FROM results WHERE raceSlug = ?");
-                $teamCountSQL->execute([$raceSlug]);
-                $participantCount = $teamCountSQL->fetchColumn();
-            } else {
-                $playerCountSQL = $pdo->prepare("SELECT COUNT(DISTINCT racerRacetimeID) FROM results WHERE raceSlug = ?");
-                $playerCountSQL->execute([$raceSlug]);
-                $participantCount = $playerCountSQL->fetchColumn();
+            $race_id = $row['id'];
+            require ('../includes/race_info.php');
+            echo $startOfRow . '<td>' . $race_date . '</td><td>' . $race_mode . '</td><td>' . $race_description_short . '</td><td>';
+            if ($race_from_racetime == 'y' ) {
+                echo '<a target="_blank" href="https://racetime.gg/smz3/' . $race_slug . '">';
             }
-            if($raceIsSpoiler == 'y') {
-                if($raceDescription == '') {
-                    $raceDescription = '<a target="_blank" href="' . $raceSpoilerLink . '">Link to Spoiler</a>';
-                } else {
-                    $raceDescription = $raceDescription . ' - <a target="_blank" href="' . $raceSpoilerLink . '">Link to Spoiler</a>';
-                }
-            }
-            echo $startOfRow . '<td>' . $raceStart . '</td><td>' . $raceMode . '</td><td>' . $raceDescription . '</td><td>';
-            if ($raceFromRacetime == 'y' ) {
-                echo '<a target="_blank" href="https://racetime.gg/smz3/' . $raceSlug . '">';
-            }
-            echo $raceSlug;
-            if ($raceFromRacetime == 'y') {
+            echo $race_slug;
+            if ($race_from_racetime == 'y') {
                 echo '</a>';
             }
-            echo '</td><td><a target="_blank" href="' . $raceSeed . '">Download Seed</a></td><td class="hash">' . hashToTable($raceHash) . '</td><td>' . $participantCount . '<td><a href="' . $domain . '/async/' . $raceID . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $raceID . '">View Results</a></td>';
+            echo '</td><td><a target="_blank" href="' . $race_seed . '">Download Seed</a></td><td>' . hashToTable($race_hash) . '</td><td>' . $participant_count . '<td><a href="' . $domain . '/async/' . $race_id . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $race_id . '">View Results</a></td>';
             if ($seriesColumn == 'y') {
-                echo '<td><select form="addtoseries" id="seed_' . $raceID . '" name="seed_' . $raceID . '"><option value=""></option>';
-                if ($isAdmin == 'y') {
-                    $stmt2 = $pdo->prepare("SELECT id, seriesName FROM series");
-                } elseif ($isSeriesMaker == 'y') {
-                    $stmt2 = $pdo->prepare("SELECT id, seriesName FROM series WHERE createdBy = :createdBy");
+                echo '<td><select form="addtoseries" id="seed_' . $race_id . '" name="seed_' . $race_id . '"><option value=""></option>';
+                if ($admin_flag == 'y') {
+                    $stmt2 = $pdo->prepare("SELECT id, series_name FROM series");
+                } elseif ($series_flag == 'y') {
+                    $stmt2 = $pdo->prepare("SELECT id, series_name FROM series WHERE createdBy = :createdBy");
                     $stmt2->bindValue(':createdBy', $_SESSION['userid'], PDO::PARAM_INT);
                 }
                 $stmt2->execute();
                 while ($row2 = $stmt2->fetch()) {
-                    echo '<option value="' . $row2['id'] . '">' . $row2['seriesName'] . '</option>';
+                    echo '<option value="' . $row2['id'] . '">' . $row2['series_name'] . '</option>';
                 }
                 echo '</select></td>';
             }

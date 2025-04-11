@@ -15,18 +15,18 @@ if ($raceAdded == 'y') {
         $seedID = intval(str_replace('seed_', '', $str));
         $seriesID = $_POST[$str];
         if ($seriesID != '') {
-            $stmt = $pdo->prepare("SELECT seriesName, seriesMembers FROM series WHERE id = :id");
+            $stmt = $pdo->prepare("SELECT series_name, series_members FROM series WHERE id = :id");
             $stmt->bindValue(':id', $seriesID, PDO::PARAM_INT);
             $stmt->execute();
             $row = $stmt->fetch();
-            $name = $row['seriesName'];
-            $members = $row['seriesMembers'];
+            $name = $row['series_name'];
+            $members = $row['series_members'];
             if ($members == null) {
                 $members = strval($seedID);
             } else {
                 $members = $members . ', ' . $seedID;
             }
-            $stmt = $pdo->prepare("UPDATE series SET seriesMembers = :members WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE series SET series_members = :members WHERE id = :id");
             $stmt->bindValue(':members', $members, PDO::PARAM_STR);
             $stmt->bindValue(':id', $seriesID, PDO::PARAM_INT);
             $stmt->execute();

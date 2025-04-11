@@ -1,7 +1,7 @@
 <?php
 
 $errors = '';
-$stmt = $pdo->prepare("SELECT id, password, is_admin, displayName FROM asyncusers WHERE email = :email");
+$stmt = $pdo->prepare("SELECT id, password, admin_flag, display_name FROM asyncusers WHERE email = :email");
 $stmt->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
 $stmt->execute();
 $row = $stmt->fetch();
@@ -11,7 +11,7 @@ if (! $row) {
     if (password_verify($_POST['password'], $row['password']) == true) {
         session_regenerate_id();
         $_SESSION['userid'] = $row['id'];
-        $_SESSION['displayName'] = $row['displayName'];
+        $_SESSION['display_name'] = $row['display_name'];
         $login_ip = $_SERVER['REMOTE_ADDR'];
         $stmt2 = $pdo->prepare("UPDATE asyncusers SET last_login_ip = :ip, last_login_date = NOW() WHERE email = :email");
         $stmt2->bindParam(':ip', $login_ip, PDO::PARAM_STR);

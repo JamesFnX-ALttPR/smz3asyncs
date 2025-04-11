@@ -10,7 +10,7 @@ while ($row = $stmt->fetch()) {
     $creator = $_POST[$cr_var];
     $organizer = $_POST[$to_var];
     $banned = $_POST[$ba_var];
-    $updateStmt = $pdo->prepare("UPDATE asyncusers SET is_seriesMaker = :creator, is_organizer = :organizer, is_banned = :banned WHERE id = :id");
+    $updateStmt = $pdo->prepare("UPDATE asyncusers SET series_flag = :creator, organizer_flag = :organizer, is_banned = :banned WHERE id = :id");
     $updateStmt->bindParam(':creator', $creator, PDO::PARAM_STR);
     $updateStmt->bindParam(':organizer', $organizer, PDO::PARAM_STR);
     $updateStmt->bindParam(':banned', $banned, PDO::PARAM_STR);

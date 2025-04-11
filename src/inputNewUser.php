@@ -1,4 +1,4 @@
-<form method="post" autocomplete="off" action="<?= $domain ?>/register">
+        <form method="post" autocomplete="off" action="<?= $domain ?>/register">
             <table class="register">
                 <caption>Register Account</caption>
                 <tbody>
@@ -17,10 +17,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <label for="displayName">Display Name: </label>
+                            <label for="display_name">Display Name: </label>
                         </td>
                         <td>
-                            <input type="text" id="displayName" name="displayName" required <?php if (isset($_POST['displayName'])) { echo 'value="' . $_POST['displayName'] . '"'; } ?>/>
+                            <input type="text" id="display_name" name="display_name" required <?php if (isset($_POST['display_name'])) { echo 'value="' . $_POST['display_name'] . '"'; } ?>/>
                         </td>
                     </tr>
                     <tr>

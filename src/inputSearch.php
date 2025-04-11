@@ -2,7 +2,7 @@
 
 // Check if we're logged in; if so, get the default offset from the database instead of assuming 90 days
 if (isset($_SESSION['userid'])) {
-    $stmt = $pdo->prepare("SELECT searchRange FROM asyncusers WHERE id = :id");
+    $stmt = $pdo->prepare("SELECT default_search_range FROM asyncusers WHERE id = :id");
     $stmt->bindValue(':id', $_SESSION['userid'], PDO::PARAM_INT);
     $stmt->execute();
     $offset = $stmt->fetchColumn();
@@ -19,9 +19,9 @@ $stmt = $pdo->query('SELECT DISTINCT raceMode FROM races ORDER BY raceMode');
 foreach($stmt as $row) {
     echo '                    <option value="' . $row['raceMode'] . '"></option>' . PHP_EOL;
 }
-$stmt = $pdo->query('SELECT DISTINCT racetimeName FROM racerinfo ORDER BY racetimeName');
+$stmt = $pdo->query('SELECT DISTINCT rtgg_name FROM racerinfo ORDER BY rtgg_name');
 foreach($stmt as $row) {
-    echo '                    <option value="' . $row['racetimeName'] . '"></option>' . PHP_EOL;
+    echo '                    <option value="' . $row['rtgg_name'] . '"></option>' . PHP_EOL;
 }
 echo '                </datalist>' . PHP_EOL;
 echo '            </td><td class="centerAlign"><input type="date" id="startDate" name="startDate" min="2022-02-21" max="' . date("Y-m-d") . '"';

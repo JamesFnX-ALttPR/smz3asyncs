@@ -1,7 +1,7 @@
 <?php
 
 // Determine if logged in user is an admin
-$stmt = $pdo->prepare("SELECT is_admin FROM asyncusers WHERE id = :id");
+$stmt = $pdo->prepare("SELECT admin_flag FROM asyncusers WHERE id = :id");
 $stmt->bindParam(':id', $_SESSION['userid'], PDO::PARAM_STR);
 $stmt->execute();
 $isAdmin = $stmt->fetchColumn();
