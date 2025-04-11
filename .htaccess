@@ -2,6 +2,7 @@ RewriteEngine on
 RewriteRule ^search$ app/search.php [END]
 RewriteRule ^async/(\d+)$ app/async.php?raceID=$1 [END]
 RewriteRule ^results/(\d+)$ app/results.php?raceID=$1 [END]
+RewriteRule ^results/(\d+)/data$ app/data.php?raceID=$1 [END]
 RewriteRule ^discord$ https://discord.gg/DbJQbJTju3 [END]
 RewriteRule ^sorttable.js$ includes/sorttable.js [END]
 RewriteRule ^register$ app/register.php [END]
