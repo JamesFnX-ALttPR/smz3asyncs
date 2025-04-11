@@ -39,15 +39,46 @@ function convertTimestamp($s) {
 
 function alttprValidateInfoBot($s) {
     if($s == '') {
-        return 'n';
+        return false;
     }
     $sArray = explode(' - ', $s, 3);
     if(count($sArray) < 3) {
-        return 'n';
+        return false;
     } else {
-        return 'y';
+        return true;
     }
 }
+
+function inertia_validation($s) {
+    if ($s == '') {
+        return false;
+    }
+    $s_array = preg_split('/\r\n|\r|\n/', $s, 2);
+    if (count($s_array) != 2) {
+        return false;
+    }
+    $url_to_test = $s_array[0];
+    $hash_to_test = $s_array[1];
+    $valid_hashes = ["AIGORU", "ALCOON", "ARRGI", "ATOMIC", "BABURU", "BABUSU", "BEETOM", "BORU", "BOYON", "BULL", "CHOOT", "COVERN", "EVIR",
+    "FANGIN", "FUNE", "GAMET", "GAPURA", "GEEMER", "GERUDO", "GERUTA", "GIBO", "GUZU", "HACHI", "HEISHI", "HOBA", "HOLTZ", "HYU",
+    "KAGO", "KISU", "KOPPI", "KURIPI", "KYUNE", "MEDUSA", "NAMIHE", "NOMOSU", "OUM", "OWTCH", "PIKKU", "PON", "POPO", "POWAMP",
+    "PUROMI", "PUYO", "RIBA", "RINKA", "RIPPER", "ROPA", "SCISER", "SKREE", "SOVA", "SUTARU", "TAINON", "TATORI", "TERU", "TOPPO",
+    "TOZOKU", "VIOLA", "WAINDA", "WAVER", "YARD", "ZEBBO", "ZEELA", "ZOA", "ZORA"];
+    if (substr($url_to_test, 0, 13) != 'https://samus') {
+        return false;
+    }
+    $hash_array = explode(' ', $hash_to_test, 4);
+    if (count($hash_array) != 4) {
+        return false;
+    }
+    for ($i=0; $i < count($hash_array); $i++) {
+        if (!in_array($hash_array[$i], $valid_hashes)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function alttprParseInfoBot($s) {
     $sArray = explode(' - ', $s, 3);
     return $sArray;

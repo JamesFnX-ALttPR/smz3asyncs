@@ -11,80 +11,85 @@ $options = [
 ];
 $pdo = new PDO($dsn, $user, $pass, $options);
 
-$slugList = array('');
+$slug_list = array('');
 $url = 'https://racetime.gg/smz3/races/data';
-$urlData = curlData($url);
-$urlJson = json_decode($urlData, true);
-$numPages = $urlJson['num_pages'];
-unset($url); unset($urlData); unset($urlJson);
-for($i=1;$i<=3;$i++) {
+$url_data = curlData($url);
+$url_json = json_decode($url_data, true);
+$numPages = $url_json['num_pages'];
+unset($url); unset($url_data); unset($url_json);
+for($i=1;$i<=20;$i++) {
     $url = 'https://racetime.gg/smz3/races/data?page=' . $i;
-    $urlData = curlData($url);
-    $urlJson = json_decode($urlData, true);
-    $numRaces = count($urlJson['races']);
-    for($j=0;$j<$numRaces;$j++) {
-        $raceName = substr($urlJson['races'][$j]['name'], 5);
-        array_unshift($slugList, $raceName);
+    $url_data = curlData($url);
+    $url_json = json_decode($url_data, true);
+    $num_races = count($url_json['races']);
+    for($j=0;$j<$num_races;$j++) {
+        $race_name = substr($url_json['races'][$j]['name'], 5);
+        array_unshift($slug_list, $race_name);
     }
-    unset($url); unset($urlData); unset($urlJson);
+    unset($url); unset($url_data); unset($url_json);
 }
-array_pop($slugList);
-$slugCount = count($slugList);
-for($i=0;$i<$slugCount;$i++) {
-    $url = 'https://racetime.gg/smz3/' . $slugList[$i] . '/data';
-    $urlData = curlData($url);
-    $urlJson = json_decode($urlData, true);
-    $raceInfoBot = $urlJson['info_bot'];
-    $raceInfoUser = $urlJson['info_user'];
-    if($urlJson['team_race'] == false) {
-        $raceIsTeam = 'n';
+array_pop($slug_list);
+$slug_count = count($slug_list);
+for($i=0;$i<$slug_count;$i++) {
+    $url = 'https://racetime.gg/smz3/' . $slug_list[$i] . '/data';
+    $url_data = curlData($url);
+    $url_json = json_decode($url_data, true);
+    $info_bot = $url_json['info_bot'];
+    $info_user = $url_json['info_user'];
+    if($url_json['team_race'] == false) {
+        $team_flag = 'n';
     } else {
-        $raceIsTeam = 'y';
+        $team_flag = 'y';
     }
-    $raceStart = convertTimestamp($urlJson['opened_at']);
-    if(alttprValidateInfoBot($raceInfoBot) == 'y') {
-        $raceInfoBotArray = alttprParseInfoBot($raceInfoBot);
-        $raceMode = $raceInfoBotArray[0];
-        $raceSeed = $raceInfoBotArray[1];
-        $raceHash = $raceInfoBotArray[2];
+    $race_start = convertTimestamp($url_json['opened_at']);
+    if(alttprValidateInfoBot($info_bot)) {
+        $info_bot_array = alttprParseInfoBot($info_bot);
+        $race_mode = $info_bot_array[0];
+        $race_seed = $info_bot_array[1];
+        $race_hash = $info_bot_array[2];
+    } elseif (inertia_validation($info_bot)) {
+        $info_bot_array = preg_split('/\r\n|\r|\n/', $info_bot, 2);
+        $race_mode = 'mm2nescartridge/normalboots';
+        $race_seed = $info_bot_array[0];
+        $race_hash = $info_bot_array[1];
     } else {
-        $raceMode = '';
-        $raceSeed = '';
-        $raceHash = '';
+        $race_mode = '';
+        $race_seed = '';
+        $race_hash = '';
     }
-    if($raceSeed != '') {
+    if($race_seed != '') {
         $stmt = $pdo->prepare("SELECT id FROM races WHERE raceSlug = ?");
-        $stmt->execute([$slugList[$i]]);
-        $raceExists = $stmt->fetchColumn();
-        if(! $raceExists) {
-            if(substr($raceMode, 0, 7) == 'spoiler') {
-                $chatLog = 'https://racetime.gg/smz3/' . $slugList[$i] . '.txt';
-                preg_match('/https:\/\/.+\/api\/spoiler.+/', curlData($chatLog), $matches);
-                $spoilerLink = $matches[0];
-                $raceIsSpoiler = 'y';
+        $stmt->execute([$slug_list[$i]]);
+        $race_exists = $stmt->fetchColumn();
+        if(! $race_exists) {
+            if(substr($race_mode, 0, 7) == 'spoiler') {
+                $chat_log = 'https://racetime.gg/smz3/' . $slug_list[$i] . '.txt';
+                preg_match('/https:\/\/.+\/api\/spoiler.+/', curlData($chat_log), $matches);
+                $spoiler_link = $matches[0];
+                $spoiler_flag = 'y';
             } else {
-                $spoilerLink = '';
-                $raceIsSpoiler = 'n';
+                $spoiler_link = '';
+                $spoiler_flag = 'n';
             }
             $sql = "INSERT INTO races (raceSlug, raceStart, raceMode, raceSeed, raceHash, raceDescription, raceIsTeam, raceFromRacetime, raceIsSpoiler, raceSpoilerLink) VALUES (?, ?, ?, ?, ?, ?, ?, 'y', ?, ?)";
-            $pdo->prepare($sql)->execute([$slugList[$i], $raceStart, $raceMode, $raceSeed, $raceHash, $raceInfoUser, $raceIsTeam, $raceIsSpoiler, $spoilerLink]);
-            $racePlayerCount = count($urlJson['entrants']);
+            $pdo->prepare($sql)->execute([$slug_list[$i], $race_start, $race_mode, $race_seed, $race_hash, $info_user, $team_flag, $spoiler_flag, $spoiler_link]);
+            $racePlayerCount = count($url_json['entrants']);
             for($j=0;$j<$racePlayerCount;$j++) {
-                $playerRacetimeID = $urlJson['entrants'][$j]['user']['id'];
+                $playerRacetimeID = $url_json['entrants'][$j]['user']['id'];
                 if ($playerRacetimeID == null) {
                     $playerRacetimeID = generateRacerID();
                 }
-                $playerName = $urlJson['entrants'][$j]['user']['name'];
+                $playerName = $url_json['entrants'][$j]['user']['name'];
                 if ($playerName == null) {
                     $playerName = 'Unknown User ' . random_int(1, 999999);
                 }
-                $playerDiscriminator = $urlJson['entrants'][$j]['user']['discriminator'];
-                if($urlJson['team_race'] == true) {
-                    $playerTeam = $urlJson['entrants'][$j]['team']['name'];
+                $playerDiscriminator = $url_json['entrants'][$j]['user']['discriminator'];
+                if($url_json['team_race'] == true) {
+                    $playerTeam = $url_json['entrants'][$j]['team']['name'];
                 } else {
                     $playerTeam = '';
                 }
-                $playerRealTime = $urlJson['entrants'][$j]['finish_time'];
+                $playerRealTime = $url_json['entrants'][$j]['finish_time'];
                 if($playerRealTime == '') {
                     $playerRealTime = 20000;
                     $playerIsForfeit = 'y';
@@ -92,24 +97,24 @@ for($i=0;$i<$slugCount;$i++) {
                     $playerRealTime = convertFinishTime($playerRealTime);
                     $playerIsForfeit = 'n';
                 }
-                $playerComment = $urlJson['entrants'][$j]['comment'];
+                $playerComment = $url_json['entrants'][$j]['comment'];
                 if($playerComment == null) {
                     $playerComment = '';
                 }
                 $stmt = $pdo->prepare("SELECT id FROM results WHERE raceSlug = ? AND racerRacetimeID = ?");
-                $stmt->execute([$slugList[$i], $playerRacetimeID]);
+                $stmt->execute([$slug_list[$i], $playerRacetimeID]);
                 $resultExists = $stmt->fetchColumn();
                 if(! $resultExists) {
                     $sql = "INSERT INTO results (raceSlug, racerRacetimeID, racerTeam, racerRealTime, racerComment, racerForfeit, racerFromRacetime) VALUES (?, ?, ?, ?, ?, ?, 'y')";
-                    $pdo->prepare($sql)->execute([$slugList[$i], $playerRacetimeID, $playerTeam, $playerRealTime, $playerComment, $playerIsForfeit]);
+                    $pdo->prepare($sql)->execute([$slug_list[$i], $playerRacetimeID, $playerTeam, $playerRealTime, $playerComment, $playerIsForfeit]);
                     $stmt = $pdo->prepare("SELECT id FROM racerinfo WHERE racetimeID = ?");
                     $stmt->execute([$playerRacetimeID]);
                     $racetimeIDExists = $stmt->fetchColumn();
                     if(! $racetimeIDExists) {
-                        $sql = "INSERT INTO racerinfo (racetimeID, racetimeName, racetimeDiscriminator) VALUES (?, ?, ?)";
+                        $sql = "INSERT INTO racerinfo (racetimeID, rtgg_name, rtgg_discriminator) VALUES (?, ?, ?)";
                         $pdo->prepare($sql)->execute([$playerRacetimeID, $playerName, $playerDiscriminator]);
                     } else {
-                        $sql = "UPDATE racerinfo SET racetimeName = ?, racetimeDiscriminator = ? WHERE racetimeID = ?";
+                        $sql = "UPDATE racerinfo SET rtgg_name = ?, rtgg_discriminator = ? WHERE racetimeID = ?";
                         $pdo->prepare($sql)->execute([$playerName, $playerDiscriminator, $playerRacetimeID]);
                     }
                 }

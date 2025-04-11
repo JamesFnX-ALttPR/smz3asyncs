@@ -57,7 +57,6 @@ if (isset($_POST['filter_coop'])) {
 }
 if ($searchTerm == '' && $searchHash == '') {
     echo '        <div class="error">You must search for a term or a full hash. Please try again.</div>' . PHP_EOL;
-    include('../src/selectJS.php');
     include('../src/inputSearch.php');
 } else {
     if($_POST['startDate'] != '') {
@@ -167,7 +166,6 @@ if ($searchTerm == '' && $searchHash == '') {
     $rslt = $stmt->fetchColumn();
     if (! $rslt) {
         echo '        <div class="error">No results found for your search. Please try again.</div>' . PHP_EOL;
-        include('../src/selectJS.php');
         include('../src/inputSearch.php');
     } else {
         if ($searchTerm != '' && $searchHash != '') {
@@ -359,7 +357,7 @@ if ($searchTerm == '' && $searchHash == '') {
             if ($race_from_racetime == 'y') {
                 echo '</a>';
             }
-            echo '</td><td><a target="_blank" href="' . $race_seed . '">Download Seed</a></td><td>' . hashToImages($race_hash) . '</td><td>' . $participant_count . '<td><a href="' . $domain . '/async/' . $race_id . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $race_id . '">View Results</a></td>';
+            echo '</td><td><a target="_blank" href="' . $race_seed . '">Download Seed</a></td><td>' . hashToTable($race_hash) . '</td><td>' . $participant_count . '<td><a href="' . $domain . '/async/' . $race_id . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $race_id . '">View Results</a></td>';
             if ($seriesColumn == 'y') {
                 echo '<td><select form="addtoseries" id="seed_' . $race_id . '" name="seed_' . $race_id . '"><option value=""></option>';
                 if ($admin_flag == 'y') {

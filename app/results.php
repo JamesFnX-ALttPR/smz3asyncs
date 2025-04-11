@@ -42,6 +42,15 @@ if(!isset($_GET['raceID'])) {
             $row_data = array($place, $racer_name, $racer_team, $racer_time, $racer_collection_rate, $racer_comment, $racer_forfeit, $racer_vod);
             fputcsv($f, $row_data, $delimiter);
         }
+        $stmt = $pdo->prepare("SELECT id FROM results WHERE raceSlug = :slug AND racerForfeit = 'y'");
+        $stmt->bindValue(':slug', $race_slug, PDO::PARAM_STR);
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $result_id = $row['id'];
+            require ('../includes/result_info.php');
+            $row_data = array('FF', $racer_name, $racer_team, $racer_time, $racer_collection_rate, $racer_comment, $racer_forfeit, $racer_vod);
+            fputcsv($f, $row_data, $delimiter);
+        }
         fclose ($f);
         // If case fclose does not work, uncomment fseek() and fpassthru().
         // fseek($f, 0);
@@ -67,6 +76,8 @@ if ($race_login_flag == 'y' && ! isset($_SESSION['userid'])) {
     $rslt = $stmt->fetchColumn();
     if (!$rslt && $race_created_by != $_SESSION['userid']) {
         echo '        <div class="error">Only racers who have submitted a result may view results for this async.<br />Click <a href="' . $domain . '/async/' . $raceID . '">here</a> to submit a result.</div><br />' . PHP_EOL;
+    } else {
+        require_once ('../src/displayResults.php');
     }
 } else {
     require_once ('../src/displayResults.php');

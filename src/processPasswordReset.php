@@ -54,7 +54,7 @@ if (isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response']))
         If you did not request a password reset, please ignore this email.<br />
         <br />
         Thanks,<br />
-        The ALttPR Asyncs Team</p>
+        The SMZ3 Asyncs Team</p>
     </body>
 </html>';
                     mail($email, $subject, $message, implode("\r\n", $headers));
