@@ -276,6 +276,8 @@ if($race_team_flag == 'n') {
         $stmt->bindValue(':team', $team_name, PDO::PARAM_STR);
         $stmt->execute();
         while($row = $stmt->fetch()) {
+            $result_id = $row['id'];
+            require ('../includes/result_info.php');
             if($rowCount % 2 == 0) {
                 if($result_from_racetime == 'n' && $race_from_racetime == 'y') {
                     echo '                <tr class="even new">';
