@@ -16,7 +16,7 @@ echo '                    <tr><td class="submitButton" colspan="2"><a href="' . 
 echo '                </tbody>' . PHP_EOL;
 echo '            </table>' . PHP_EOL;
 echo '            <input type="hidden" id="redirectTo" name="redirectTo" value="';
-if ($escaped_request == '/login' || $escaped_request == '/logout' || $escaped_request == '/reset') {
+if ($escaped_request == '/login' || $escaped_request == '/logout' || $escaped_request == '/reset' || $escaped_request == '/register') {
     $escaped_request = '/account';
 }
 echo $escaped_request . '" />' . PHP_EOL;
