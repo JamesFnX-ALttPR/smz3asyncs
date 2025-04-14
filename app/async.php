@@ -29,10 +29,10 @@ if($submitted == 0) {
         echo '        <div class="error">Result submissions for this race are locked. No new submissions are allowed at this time.</div><br />';
         require_once ('../src/displayResults.php');
     } else {
-        if ($race_login_flag == 'y' && !$user_id) {
+        if ($race_login_flag == 'y' && !isset($user_id)) {
             echo '        <div class="error">You must log in to submit or view results for this async.</div><br />' . PHP_EOL;
             require_once ('../src/loginForm.php');
-        } elseif ($race_tournament_flag == 'y' && !$user_id) {
+        } elseif ($race_tournament_flag == 'y' && !isset($user_id)) {
             echo '        <div class="error">You must log in to submit or view results for this async.</div><br />' . PHP_EOL;
             require_once ('../src/loginForm.php');
         } else {
@@ -43,7 +43,7 @@ if($submitted == 0) {
                 require_once ('../src/inputSingleRunner.php');
             }
         }
-    }    
+    }
 } else {
     $errorCondition = null;
     if($race_team_flag == 'y') {
