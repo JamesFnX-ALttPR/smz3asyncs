@@ -17,7 +17,7 @@ while ($row = $stmt->fetch()) {
     }
     $race_id = $row['id'];
     require ('../includes/race_info.php');
-    echo $startOfRow . '<td>' . $race_date . '</td><td>' . $race_mode . '</td><td>' . $race_description . '</td><td><a target="_blank" href="https://racetime.gg/smz3/' . $race_slug . '">' . $race_slug . '</a></td><td><a target="_blank" href="' . $race_seed . '">Download Seed</a></td><td>' . hashToTable($race_hash) . '</td><td>' . $participant_count . '<td><a href="' . $domain . '/async/' . $race_id . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $race_id . '">View Results</a></td></tr>' . PHP_EOL;
+    echo $startOfRow . '<td>' . $race_date . '</td><td>' . $race_mode . '</td><td>' . $race_description_short . '</td><td><a target="_blank" href="https://racetime.gg/smz3/' . $race_slug . '">' . $race_slug . '</a></td><td><a target="_blank" href="' . $race_seed . '">Download Seed</a></td><td>' . hashToTable($race_hash) . '</td><td>' . $participant_count . '<td><a href="' . $domain . '/async/' . $race_id . '">Submit Async</a></td><td><a href="' . $domain . '/results/' . $race_id . '">View Results</a></td></tr>' . PHP_EOL;
 }
 echo '            </tbody>' . PHP_EOL;
 echo '        </table>' . PHP_EOL;
