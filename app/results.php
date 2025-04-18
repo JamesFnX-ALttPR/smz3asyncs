@@ -24,9 +24,11 @@ if(!isset($_GET['raceID'])) {
     require ('../includes/race_info.php');
     $pageTitle = 'View Times for ' . $race_slug;
     if (is_post_request() && ($_SESSION['userid'] == $race_created_by || $admin_flag == 'y')) {
+        $filename = 'smz3asyncs-' . $race_slug . '-' . date("Y-m-d H:i:s") . '.csv';
+        header('Content-Type: text/csv'); 
+        header('Content-Disposition: attachment; filename="'.$filename.'";'); 
         $fields = array("'place'", "'name'", "'team'", "'rt_seconds'", "'cr'", "'comment'", "'forfeit'", "'vod_link'");
         $delimiter = ',';
-        $filename = 'smz3asyncs-' . $race_slug . date("Y-m-d H:i:s") . '.csv';
         $f = fopen('php://output', 'w');
         // In case, if php://output didn't work, uncomment below line
         // $f = fopen("php://memory", "w"); 
@@ -55,8 +57,6 @@ if(!isset($_GET['raceID'])) {
         // If case fclose does not work, uncomment fseek() and fpassthru().
         // fseek($f, 0);
         // Telling browser to download file as CSV
-        header('Content-Type: text/csv'); 
-        header('Content-Disposition: attachment; filename="'.$filename.'";'); 
         // fpassthru($f);
         exit();
     }
