@@ -134,7 +134,7 @@ if ($errors != '') {
             $toggleModes .= 'Locked - No New Results Allowed';
         }
     }
-    if ($$tournament == 'y') {
+    if ($tournament == 'y') {
         if ($toggleModes != '') {
             $toggleModes .= ' - Tournament Async';
         } else {
