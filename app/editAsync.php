@@ -35,7 +35,7 @@ if (is_post_request()) {
         require_once ('../includes/footer.php');
         die;
     }
-    $pageTitle = 'Edit Async for' . $raceSlug;
+    $pageTitle = 'Edit Async for' . $race_slug;
     require_once ('../includes/header.php');
     // Build out the form to edit
     require_once ('../src/inputEditAsync.php');
