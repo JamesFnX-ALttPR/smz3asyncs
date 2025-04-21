@@ -158,7 +158,7 @@ if(! $row) { // Check for existing runners
     }
     require_once ('../src/displayResults.php');
 } else {
-    $errorCondition = 'One or both of the runners already has a time for this race. Please check the <a target="_blank" href="' . $domain . '/results/' . $raceID . '">results</a>.';
+    $errorCondition = 'One or both of the runners already has a time for this race. Please check the <a target="_blank" href="' . $domain . '/results/' . $race_id . '">results</a>.';
     echo '        <div class="error">' . $errorCondition . ' - Please Try Again</div>' . PHP_EOL;
     require_once ('../src/asyncPreForm.php');
     require_once ('../src/inputTeam.php');
